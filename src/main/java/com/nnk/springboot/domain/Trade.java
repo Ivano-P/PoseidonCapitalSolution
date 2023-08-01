@@ -1,9 +1,6 @@
 package com.nnk.springboot.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -14,6 +11,7 @@ import java.sql.Timestamp;
 public class Trade {
 
     @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = "trade_id")
     Integer tradeId;
 
