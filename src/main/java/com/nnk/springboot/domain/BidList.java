@@ -1,6 +1,8 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -15,12 +17,15 @@ public class BidList {
     @Column(name="id")
     Integer id;
 
+    @NotBlank
     @Column(name = "account")
     String account;
 
+    @NotBlank
     @Column(name="type")
     String type;
 
+    @Min(value = 1, message = "Bid must be at the least 1")
     @Column(name="bid_quantity")
     Double bidQuantity;
 

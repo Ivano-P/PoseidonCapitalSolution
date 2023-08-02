@@ -34,6 +34,13 @@ public class BidListServiceImpl implements BidListService {
         return bidListOptional.orElse(null);
     }
 
+    public BidList getBidListByBid(BidList bid){
+        Optional<BidList> bidListOptional = bidListRepository.findByBid(bid);
+
+        return bidListOptional.orElse(null);
+    }
+
+
     public void deleteBidList(BidList bidList){
         bidListRepository.delete(bidList);
     }
