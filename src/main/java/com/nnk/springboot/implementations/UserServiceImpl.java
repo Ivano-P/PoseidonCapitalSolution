@@ -20,6 +20,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
+    public User getUserByUsername(String username){
+        Optional<User>userOptional = userRepository.findByUsername(username);
+        return userOptional.orElseThrow(() -> new IllegalArgumentException("Invalid username" + username));
+    }
+
     public void updateUser(User user){
         userRepository.save(user);
     }

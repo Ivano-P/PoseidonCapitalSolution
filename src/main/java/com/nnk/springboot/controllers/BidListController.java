@@ -3,6 +3,7 @@ package com.nnk.springboot.controllers;
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.services.BidListService;
+import com.nnk.springboot.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,14 @@ import java.security.Principal;
 public class BidListController {
 
     private final BidListService bidListService;
+    private final UserService userService;
 
     @RequestMapping("/bidList/list")
     public String home(Model model, Principal principal) {
         model.addAttribute("bidLists", bidListService.getAllBids());
+
+        User currentUser = userService.getUserByUsername(principal.getName());
+        model.addAttribute("currentUser", currentUser);
 
         return "bidList/list";
     }
