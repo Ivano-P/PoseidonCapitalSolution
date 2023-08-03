@@ -28,6 +28,8 @@ public class CurveController {
     private final CurveService curveService;
     private final UserService userService;
 
+    private static final String REDIRECT_CURVE_POINT_LIST = "redirect:/curvePoint/list";
+
     @RequestMapping("/curvePoint/list")
     public String home(Model model, Principal principal) {
         log.info("home method called with: {}", model);
@@ -56,7 +58,7 @@ public class CurveController {
         }else{
             curveService.saveCurvePoint(curvePoint);
         }
-        return "redirect:/curvePoint/list";
+        return REDIRECT_CURVE_POINT_LIST;
     }
 
     @GetMapping("/curvePoint/update/{id}")
@@ -77,13 +79,13 @@ public class CurveController {
         }else{
             curveService.updateCurvePoint(curvePoint, id);
         }
-        return "redirect:/curvePoint/list";
+        return REDIRECT_CURVE_POINT_LIST;
     }
 
-    @GetMapping("/curvePoint/delete/{id}")
+    @PostMapping("/curvePoint/delete/{id}")
     public String deleteBid(@PathVariable("id") Integer id) {
         log.info("deleteBid method called with: {}", id);
         curveService.deleteCurvePointById(id);
-        return "redirect:/curvePoint/list";
+        return REDIRECT_CURVE_POINT_LIST;
     }
 }

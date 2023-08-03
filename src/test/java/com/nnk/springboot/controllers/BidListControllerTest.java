@@ -2,6 +2,8 @@ package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.domain.User;
+import com.nnk.springboot.exceptions.InvalidAddBidListException;
+import com.nnk.springboot.exceptions.InvalidUpdateBidListException;
 import com.nnk.springboot.services.BidListService;
 import com.nnk.springboot.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import java.security.Principal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,7 +79,6 @@ class BidListControllerTest {
 
         //Assert
         assertThat(viewName).isEqualTo("bidList/add");
-        verify(bidListService, times(1)).getAllBids();
         verify(userService, times(1)).getUserByUsername(anyString());
     }
 
@@ -95,17 +97,16 @@ class BidListControllerTest {
     }
 
     @Test
-    void testValidate_HasErrors() {
+    void testValidate_HasErrors() throws Exception {
         // Arrange
         BindingResult result = mock(BindingResult.class);
         when(result.hasErrors()).thenReturn(true);
 
-        // Act
-        String viewName = bidListController.validate(mockBid, result);
+        // Act and Assert
+        assertThrows(InvalidAddBidListException.class,
+                () -> bidListController.validate(mockBid, result));
 
-        // Assert
-        assertThat(viewName).isEqualTo("bidList/add");
-        verify(bidListService, never()).saveBidList(mockBid);
+        verify(bidListService, never()).saveBidList(any(BidList.class));
     }
 
     @Test
@@ -126,7 +127,6 @@ class BidListControllerTest {
     void testUpdateBid() {
         // Arrange
         int id = 1;
-        when(bidListService.getBidById(id)).thenReturn(mockBid);
         when(bindingResult.hasErrors()).thenReturn(false);
 
         // Act
@@ -134,8 +134,7 @@ class BidListControllerTest {
 
         // Assert
         assertThat(viewName).isEqualTo("redirect:/bidList/list");
-        verify(bidListService, times(1)).getBidById(id);
-        verify(bidListService, times(1)).saveBidList(any(BidList.class));
+        verify(bidListService, times(1)).updateBidList(mockBid, id);
     }
 
     @Test
@@ -144,13 +143,10 @@ class BidListControllerTest {
         int id = 1;
         when(bindingResult.hasErrors()).thenReturn(true);
 
-        // Act
-        String viewName = bidListController.updateBid(id, mockBid, bindingResult);
-
-        // Assert
-        assertThat(viewName).isEqualTo("bidList/update");
-        verify(bidListService, times(0)).getBidById(id);
-        verify(bidListService, times(0)).saveBidList(any(BidList.class));
+        //Act and Assert
+        assertThrows(InvalidUpdateBidListException.class,
+                () -> bidListController.updateBid(id, mockBid, bindingResult));
+        verify(bidListService, never()).updateBidList(mockBid, id);
     }
 
     @Test
