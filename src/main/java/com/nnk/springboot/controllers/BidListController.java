@@ -2,6 +2,7 @@ package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.domain.User;
+import com.nnk.springboot.exceptions.InvalidBidListException;
 import com.nnk.springboot.services.BidListService;
 import com.nnk.springboot.services.UserService;
 import jakarta.validation.Valid;
@@ -57,8 +58,7 @@ public class BidListController {
         if(result.hasErrors()){
             log.error("InvalidBidException: {}", result.getAllErrors());
             model.addAttribute("bidList", bid);
-            return "bidList/add";
-            //TODO: make this an exception
+            throw new InvalidBidListException();
         }else{
             bidListService.updateBidList(bid);
         }
@@ -83,8 +83,7 @@ public class BidListController {
         if(result.hasErrors()){
             log.error("InvalidBidException: {}", result.getAllErrors());
             model.addAttribute("bidList", bidList);
-            return "bidList/update";
-            //TODO: make this an exception
+            throw new InvalidBidListException();
         }else{
             BidList bidListToUpdate = bidListService.getBidById(id);
             bidListToUpdate.setAccount(bidList.getAccount());
