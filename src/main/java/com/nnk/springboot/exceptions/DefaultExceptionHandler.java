@@ -55,4 +55,22 @@ public class DefaultExceptionHandler {
 
 
 
+
+    @ExceptionHandler(InvalidAddRuleNameException.class)
+    public String handleInvalidAddRuleNameException(InvalidAddRuleNameException iarne, RedirectAttributes redirectAttributes){
+        log.error("InvalidAddRuleNameException thrown: {} " , iarne.getMessage(), iarne);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iarne.getMessage());
+        return "redirect:/ruleName/add";
+    }
+    @ExceptionHandler(InvalidUpdateRuleNameException.class)
+    public String handleInvalidUpdateRuleNameException(InvalidUpdateRuleNameException iurne, RedirectAttributes redirectAttributes){
+        log.error("InvalidUpdateRuleNameException thrown: {} " , iurne.getMessage(), iurne);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iurne.getMessage());
+        return "redirect:/ruleName/update";
+    }
+
+
+
+
+
 }

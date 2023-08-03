@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Log4j2
@@ -27,13 +28,13 @@ public class CurveServiceImpl implements CurveService {
     public CurvePoint getCurvePointById(int id) {
         log.info("etCurvePointById method called with : {}", id);
         Optional<CurvePoint> curvePointOptional = curvePointRepository.findById(id);
-        return curvePointOptional.orElse(null);
+        return curvePointOptional.orElseThrow(NoSuchElementException::new);
     }
 
     public CurvePoint getCurvePointByCurveId(int curveId) {
         log.info("getCurvePointByCurveId method called with : {}", curveId);
         Optional<CurvePoint> curvePointOptional = curvePointRepository.findByCurveId(curveId);
-        return curvePointOptional.orElse(null);
+        return curvePointOptional.orElseThrow(NoSuchElementException::new);
     }
 
     public void saveCurvePoint(CurvePoint updatedCurvePoint) {

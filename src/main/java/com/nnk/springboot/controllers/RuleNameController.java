@@ -1,6 +1,14 @@
 package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.RuleName;
+import com.nnk.springboot.exceptions.InvalidAddRuleNameException;
+import com.nnk.springboot.exceptions.InvalidUpdateRuleNameException;
+import com.nnk.springboot.services.BidListService;
+import com.nnk.springboot.services.RuleNameService;
+import com.nnk.springboot.services.UserService;
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,44 +19,67 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 
+import java.security.Principal;
+
+@Log4j2
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 @Controller
 public class RuleNameController {
-    // TODO: Inject RuleName service
+
+    private final RuleNameService ruleNameService;
+    private final UserService userService;
+
+    private static final String REDIRECT_RULE_NAME_LIST = "redirect:/ruleName/list";
 
     @RequestMapping("/ruleName/list")
-    public String home(Model model)
-    {
-        // TODO: find all RuleName, add to model
+    public String home(Model model, Principal principal) {
+        log.info("home method called with: {}, {}", model, principal);
+        model.addAttribute("ruleNames", ruleNameService.getAllRuleNames());
+        model.addAttribute("currentUser", userService.getUserByUsername(principal.getName()));
         return "ruleName/list";
     }
 
     @GetMapping("/ruleName/add")
-    public String addRuleForm(RuleName bid) {
+    public String addRuleForm(RuleName ruleName, Model model) {
+        log.info("addRatingForm method called with: {}, {}", ruleName, model);
+        model.addAttribute("ruleName", new RuleName());
         return "ruleName/add";
     }
 
     @PostMapping("/ruleName/validate")
-    public String validate(@Valid RuleName ruleName, BindingResult result, Model model) {
-        // TODO: check data valid and save to db, after saving return RuleName list
-        return "ruleName/add";
+    public String validate(@Valid RuleName ruleName, BindingResult result) {
+        log.info("validate method called with: {}, {}", ruleName, result);
+        if(result.hasErrors()){
+            throw new InvalidAddRuleNameException();
+        }else{
+            ruleNameService.saveRuleName(ruleName);
+        }
+        return REDIRECT_RULE_NAME_LIST;
     }
 
     @GetMapping("/ruleName/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        // TODO: get RuleName by Id and to model then show to the form
+        log.info("showUpdateForm method called with: {}, {}", id, model);
+        model.addAttribute("ruleName", ruleNameService.getRuleNameById(id));
         return "ruleName/update";
     }
 
     @PostMapping("/ruleName/update/{id}")
     public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName,
                              BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update RuleName and return RuleName list
-        return "redirect:/ruleName/list";
+        log.info("updateRuleName method called with: {}, {}, {}", id, ruleName, result);
+        if(result.hasErrors()){
+            throw new InvalidUpdateRuleNameException();
+        }else{
+            ruleNameService.updateRuleName(ruleName, id);
+        }
+        return REDIRECT_RULE_NAME_LIST;
     }
 
     @GetMapping("/ruleName/delete/{id}")
-    public String deleteRuleName(@PathVariable("id") Integer id, Model model) {
-        // TODO: Find RuleName by Id and delete the RuleName, return to Rule list
-        return "redirect:/ruleName/list";
+    public String deleteRuleName(@PathVariable("id") Integer id) {
+        log.info("deleteRuleName method called with: {}", id);
+        ruleNameService.deleteRuleNameById(id);
+        return REDIRECT_RULE_NAME_LIST;
     }
 }

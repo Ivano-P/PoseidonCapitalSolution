@@ -29,8 +29,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public void updateRating(Rating updatedRating, int ratingToUpdateId) {
         log.info("updatedRating method called with : {}, {}", updatedRating, ratingToUpdateId);
-        Optional<Rating> ratingOptional = ratingRepository.findById(ratingToUpdateId);
-        Rating ratingToUpdate = ratingOptional.orElseThrow(NoSuchElementException::new);
+        Rating ratingToUpdate = getRatingById(ratingToUpdateId);
         ratingToUpdate.setMoodysRating(updatedRating.getMoodysRating());
         ratingToUpdate.setSandPRating(updatedRating.getSandPRating());
         ratingToUpdate.setFitchRating(updatedRating.getFitchRating());
