@@ -11,15 +11,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
-
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-
-import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class RatingServiceTest {
@@ -30,7 +27,6 @@ class RatingServiceTest {
     @Mock
     RatingRepository ratingRepository;
 
-    @Mock
     Rating mockRating;
 
     @BeforeEach
