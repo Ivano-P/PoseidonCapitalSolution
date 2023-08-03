@@ -2,7 +2,8 @@ package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.domain.User;
-import com.nnk.springboot.exceptions.InvalidBidListException;
+import com.nnk.springboot.exceptions.InvalidAddBidListException;
+import com.nnk.springboot.exceptions.InvalidUpdateBidListException;
 import com.nnk.springboot.services.BidListService;
 import com.nnk.springboot.services.UserService;
 import jakarta.validation.Valid;
@@ -43,24 +44,20 @@ public class BidListController {
     public String addBidForm(BidList bid, Principal principal, Model model) {
         log.info("addBidForm called with bid:  {}, {}", bid, model);
 
-        model.addAttribute("bidLists", bidListService.getAllBids());
-
-        User currentUser = userService.getUserByUsername(principal.getName());
-        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("bidLists", new BidList());
+        model.addAttribute("currentUser", userService.getUserByUsername(principal.getName()));
 
         return "bidList/add";
     }
 
     @PostMapping("/bidList/validate")
-    public String validate(@Valid BidList bid, BindingResult result, Model model) {
+    public String validate(@Valid BidList bid, BindingResult result) {
         log.info("validate called with bid:  {}, {}", bid, result);
 
         if(result.hasErrors()){
-            log.error("InvalidBidException: {}", result.getAllErrors());
-            model.addAttribute("bidList", bid);
-            throw new InvalidBidListException();
+            throw new InvalidAddBidListException();
         }else{
-            bidListService.updateBidList(bid);
+            bidListService.saveBidList(bid);
         }
 
         return REDIRECT_BID_LIST_LIST;
@@ -77,26 +74,20 @@ public class BidListController {
 
     @PostMapping("/bidList/update/{id}")
     public String updateBid(@PathVariable("id") Integer id, @Valid BidList bidList,
-                            BindingResult result, Model model) {
+                            BindingResult result) {
         log.info("updateBid method called with : {}, {}, {}", id, bidList, result);
 
         if(result.hasErrors()){
-            log.error("InvalidBidException: {}", result.getAllErrors());
-            model.addAttribute("bidList", bidList);
-            throw new InvalidBidListException();
+            throw new InvalidUpdateBidListException();
         }else{
-            BidList bidListToUpdate = bidListService.getBidById(id);
-            bidListToUpdate.setAccount(bidList.getAccount());
-            bidListToUpdate.setType(bidList.getType());
-            bidListToUpdate.setBidQuantity(bidList.getBidQuantity());
-            bidListService.updateBidList(bidListToUpdate);
+            bidListService.updateBidList(bidList, id);
         }
         return REDIRECT_BID_LIST_LIST;
     }
 
     @PostMapping("/bidList/delete/{id}")
-    public String deleteBid(@PathVariable("id") Integer id, Model model) {
-        log.info("deleteBid method called for bid id: {}, {} ", id, model);
+    public String deleteBid(@PathVariable("id") Integer id) {
+        log.info("deleteBid method called for bid id: {} ", id);
 
         bidListService.deleteBidListById(id);
         return REDIRECT_BID_LIST_LIST;

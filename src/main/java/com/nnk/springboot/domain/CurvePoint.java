@@ -1,6 +1,7 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -17,8 +18,9 @@ public class CurvePoint {
     @Column(name = "id")
     Integer id;
 
+    @NotNull
     @Column(name = "curve_id")
-    Integer curveId;
+    int curveId;
 
     @Column(name = "as_of_date")
     Timestamp asOfDate;

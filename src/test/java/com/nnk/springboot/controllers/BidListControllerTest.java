@@ -87,11 +87,11 @@ class BidListControllerTest {
         when(result.hasErrors()).thenReturn(false);
 
         // Act
-        String viewName = bidListController.validate(mockBid, result, model);
+        String viewName = bidListController.validate(mockBid, result);
 
         // Assert
         assertThat(viewName).isEqualTo("redirect:/bidList/list");
-        verify(bidListService, times(1)).updateBidList(mockBid);
+        verify(bidListService, times(1)).saveBidList(mockBid);
     }
 
     @Test
@@ -101,11 +101,11 @@ class BidListControllerTest {
         when(result.hasErrors()).thenReturn(true);
 
         // Act
-        String viewName = bidListController.validate(mockBid, result, model);
+        String viewName = bidListController.validate(mockBid, result);
 
         // Assert
         assertThat(viewName).isEqualTo("bidList/add");
-        verify(bidListService, never()).updateBidList(mockBid);
+        verify(bidListService, never()).saveBidList(mockBid);
     }
 
     @Test
@@ -130,12 +130,12 @@ class BidListControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         // Act
-        String viewName = bidListController.updateBid(id, mockBid, bindingResult, model);
+        String viewName = bidListController.updateBid(id, mockBid, bindingResult);
 
         // Assert
         assertThat(viewName).isEqualTo("redirect:/bidList/list");
         verify(bidListService, times(1)).getBidById(id);
-        verify(bidListService, times(1)).updateBidList(any(BidList.class));
+        verify(bidListService, times(1)).saveBidList(any(BidList.class));
     }
 
     @Test
@@ -145,12 +145,12 @@ class BidListControllerTest {
         when(bindingResult.hasErrors()).thenReturn(true);
 
         // Act
-        String viewName = bidListController.updateBid(id, mockBid, bindingResult, model);
+        String viewName = bidListController.updateBid(id, mockBid, bindingResult);
 
         // Assert
         assertThat(viewName).isEqualTo("bidList/update");
         verify(bidListService, times(0)).getBidById(id);
-        verify(bidListService, times(0)).updateBidList(any(BidList.class));
+        verify(bidListService, times(0)).saveBidList(any(BidList.class));
     }
 
     @Test
@@ -161,7 +161,7 @@ class BidListControllerTest {
         doNothing().when(bidListService).deleteBidListById(id);
 
         // Act
-        String viewName = bidListController.deleteBid(id, model);
+        String viewName = bidListController.deleteBid(id);
 
         // Assert
         assertThat(viewName).isEqualTo("redirect:/bidList/list");

@@ -39,7 +39,7 @@ class BidListServiceTest {
     @Test
     void updateBidList() {
         // Act
-        bidListService.updateBidList(mockBid);
+        bidListService.saveBidList(mockBid);
 
         // Assert
         verify(bidListRepository, times(1)).save(mockBid);
@@ -65,18 +65,6 @@ class BidListServiceTest {
 
         // Act
         BidList bidList = bidListService.getBidById(id);
-
-        // Assert
-        assertThat(bidList).isEqualTo(mockBid);
-    }
-
-    @Test
-    void getBidListByBid() {
-        // Arrange
-        when(bidListRepository.findByBid(mockBid)).thenReturn(Optional.of(mockBid));
-
-        // Act
-        BidList bidList = bidListService.getBidListByBid(mockBid);
 
         // Assert
         assertThat(bidList).isEqualTo(mockBid);

@@ -10,11 +10,32 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class DefaultExceptionHandler {
 
     private static final String ERROR_MESSAGE = "errorMsg";
-    @ExceptionHandler(InvalidBidListException.class)
-    public String handleInvalidBidListException(InvalidBidListException ible, RedirectAttributes redirectAttributes){
-        log.error("InvalidBidListException thrown: {} " , ible.getMessage(), ible);
-        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, ible.getMessage());
-        return "redirect:/bidList/list";
+
+    @ExceptionHandler(InvalidAddBidListException.class)
+    public String handleInvalidAddBidListException(InvalidAddBidListException iable, RedirectAttributes redirectAttributes){
+        log.error("InvalidAddBidListException thrown: {} " , iable.getMessage(), iable);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iable.getMessage());
+        return "redirect:/bidList/add";
+    }
+    @ExceptionHandler(InvalidUpdateBidListException.class)
+    public String handleInvalidUpdateBidListException(InvalidUpdateBidListException iuble, RedirectAttributes redirectAttributes){
+        log.error("InvalidUpdateBidListException thrown: {} " , iuble.getMessage(), iuble);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iuble.getMessage());
+        return "redirect:/bidList/update";
+    }
+
+
+    @ExceptionHandler(InvalidAddCurvePointException.class)
+    public String handleInvalidAddCurvePointException(InvalidAddCurvePointException iacpe, RedirectAttributes redirectAttributes){
+        log.error("InvalidAddCurvePointException thrown: {} " , iacpe.getMessage(), iacpe);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iacpe.getMessage());
+        return "redirect:/curvePoint/add";
+    }
+    @ExceptionHandler(InvalidUpdateCurvePointException.class)
+    public String handleInvalidUpdateCurvePointException(InvalidUpdateCurvePointException iucpe, RedirectAttributes redirectAttributes){
+        log.error("InvalidUpdateCurvePointException thrown: {} " , iucpe.getMessage(), iucpe);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iucpe.getMessage());
+        return "redirect:/curvePoint/update";
     }
 
 

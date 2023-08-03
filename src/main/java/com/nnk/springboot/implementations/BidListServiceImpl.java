@@ -12,17 +12,26 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Transactional
 @Log4j2
-@Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
+@Transactional
+@Service
 public class BidListServiceImpl implements BidListService {
 
     private final BidListRepository bidListRepository;
 
-    public void updateBidList(BidList bidList) {
+    public void saveBidList(BidList bidList) {
         log.info("updateBidList method called with: {}", bidList);
         bidListRepository.save(bidList);
+    }
+
+    public void updateBidList(BidList updatedBidlist, int bidListToUpdateId){
+        log.info("updateBidList method called with: {}, {}", updatedBidlist, bidListToUpdateId);
+        BidList bidListToUpdate = getBidById(bidListToUpdateId);
+        bidListToUpdate.setAccount(updatedBidlist.getAccount());
+        bidListToUpdate.setType(updatedBidlist.getType());
+        bidListToUpdate.setBidQuantity(updatedBidlist.getBidQuantity());
+        saveBidList(bidListToUpdate);
     }
 
     public List<BidList> getAllBids() {
@@ -34,13 +43,6 @@ public class BidListServiceImpl implements BidListService {
     public BidList getBidById(int id) {
         log.info("getBidById method called with: {}", id);
         Optional<BidList> bidListOptional = bidListRepository.findById(id);
-
-        return bidListOptional.orElse(null);
-    }
-
-    public BidList getBidListByBid(BidList bid) {
-        log.info("getBidListByBid method called with: {}", bid);
-        Optional<BidList> bidListOptional = bidListRepository.findByBid(bid);
 
         return bidListOptional.orElse(null);
     }
