@@ -20,32 +20,39 @@ public class BidListServiceImpl implements BidListService {
 
     private final BidListRepository bidListRepository;
 
-    public void updateBidList(BidList bidList){
+    public void updateBidList(BidList bidList) {
+        log.info("updateBidList method called with: {}", bidList);
         bidListRepository.save(bidList);
     }
 
-    public List<BidList> getAllBids(){
+    public List<BidList> getAllBids() {
+
+        log.info("getAllBids method called");
         return bidListRepository.findAll();
     }
 
-    public BidList getBidById(int id){
+    public BidList getBidById(int id) {
+        log.info("getBidById method called with: {}", id);
         Optional<BidList> bidListOptional = bidListRepository.findById(id);
 
         return bidListOptional.orElse(null);
     }
 
-    public BidList getBidListByBid(BidList bid){
+    public BidList getBidListByBid(BidList bid) {
+        log.info("getBidListByBid method called with: {}", bid);
         Optional<BidList> bidListOptional = bidListRepository.findByBid(bid);
 
         return bidListOptional.orElse(null);
     }
 
 
-    public void deleteBidList(BidList bidList){
+    public void deleteBidList(BidList bidList) {
+        log.info("deleteBidList method called with: {}", bidList);
         bidListRepository.delete(bidList);
     }
 
-    public void deleteBidListById(int id){
+    public void deleteBidListById(int id) {
+        log.info("deleteBidListById method called with: {}", id);
         bidListRepository.deleteById(id);
     }
 
