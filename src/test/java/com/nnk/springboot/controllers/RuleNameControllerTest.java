@@ -112,7 +112,7 @@ class RuleNameControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         //Act
-        String result = ruleNameController.updateRuleName(1, mockRuleName, bindingResult, model);
+        String result = ruleNameController.updateRuleName(1, mockRuleName, bindingResult);
 
         //Assert
         verify(ruleNameService, times(1)).updateRuleName(mockRuleName, 1);

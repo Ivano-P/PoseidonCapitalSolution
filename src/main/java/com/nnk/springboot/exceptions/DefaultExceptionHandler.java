@@ -72,5 +72,21 @@ public class DefaultExceptionHandler {
 
 
 
+    @ExceptionHandler(InvalidAddTradeException.class)
+    public String handleInvalidAddTradeException(InvalidAddTradeException iate, RedirectAttributes redirectAttributes){
+        log.error("InvalidAddTradeException thrown: {} " , iate.getMessage(), iate);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iate.getMessage());
+        return "redirect:/trade/add";
+    }
+    @ExceptionHandler(InvalidUpdateTradeException.class)
+    public String handleInvalidUpdateTradeException(InvalidUpdateTradeException iute, RedirectAttributes redirectAttributes){
+        log.error("InvalidUpdateTradeException thrown: {} " , iute.getMessage(), iute);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iute.getMessage());
+        return "redirect:/trade/update";
+    }
+
+
+
+
 
 }

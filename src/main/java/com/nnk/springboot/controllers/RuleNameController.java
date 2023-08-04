@@ -66,7 +66,7 @@ public class RuleNameController {
 
     @PostMapping("/ruleName/update/{id}")
     public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName,
-                             BindingResult result, Model model) {
+                             BindingResult result) {
         log.info("updateRuleName method called with: {}, {}, {}", id, ruleName, result);
         if(result.hasErrors()){
             throw new InvalidUpdateRuleNameException();
