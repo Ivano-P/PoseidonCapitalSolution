@@ -1,9 +1,12 @@
 package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.User;
+import com.nnk.springboot.exceptions.InvalidAddUserException;
+import com.nnk.springboot.exceptions.InvalidUpdateUserException;
 import com.nnk.springboot.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -14,64 +17,66 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
+
 @AllArgsConstructor(onConstructor = @__(@Autowired))
+@Log4j2
 @Controller
 public class UserController {
 
     private final UserService userService;
 
+    private static final String REDIRECT_USER_LIST = "redirect:/user/list";
+
     @RequestMapping("/user/list")
-    public String home(Model model)
-    {
+    public String home(Model model, Principal principal) {
+        log.info("home method called with: {}, {}", model, principal);
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("currentUser", userService.getUserByUsername(principal.getName()));
         return "user/list";
     }
 
     @GetMapping("/user/add")
-    public String addUser(User bid) {
+    public String addUserForm(User user, Model model) {
+        log.info("addUserForm method called with: {}, {}", user, model);
+        model.addAttribute("user", new User());
         return "user/add";
     }
 
     @PostMapping("/user/validate")
     public String validate(@Valid User user, BindingResult result, Model model) {
-        if (!result.hasErrors()) {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            user.setPassword(encoder.encode(user.getPassword()));
-            userService.updateUser(user);
-            model.addAttribute("users", userService.getAllUsers());
-            return "redirect:/user/list";
+        log.info("validate method called with: {}, {}, {}", user, result,model);
+        if (result.hasErrors()) {
+            throw new InvalidAddUserException();
+        }else {
+            userService.saveUser(user);
         }
-        return "user/add";
+        return REDIRECT_USER_LIST;
     }
 
     @GetMapping("/user/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        User user = userService.getUserById(id);
-        user.setPassword("");
-        model.addAttribute("user", user);
+        log.info("showUpdateForm method called with: {}, {}", id, model);
+        model.addAttribute("user", userService.getUserById(id));
         return "user/update";
     }
 
     @PostMapping("/user/update/{id}")
     public String updateUser(@PathVariable("id") Integer id, @Valid User user,
                              BindingResult result, Model model) {
+        log.info("updateUser method called with: {}, {}, {}", id, user, result);
         if (result.hasErrors()) {
-            return "user/update";
+            throw new InvalidUpdateUserException();
+        }else{
+            userService.updateUser(user, id);
         }
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setId(id);
-        userService.updateUser(user);
-        model.addAttribute("users", userService.getAllUsers());
-        return "redirect:/user/list";
+        return REDIRECT_USER_LIST;
     }
 
     @GetMapping("/user/delete/{id}")
-    public String deleteUser(@PathVariable("id") Integer id, Model model) {
-        User user = userService.getUserById(id);
-        userService.deleteUser(user);
-        model.addAttribute("users", userService.getAllUsers());
-        return "redirect:/user/list";
+    public String deleteUser(@PathVariable("id") Integer id) {
+        log.info("deleteUser method called with: {}", id);
+        userService.deleteUserById(id);
+        return REDIRECT_USER_LIST;
     }
 }

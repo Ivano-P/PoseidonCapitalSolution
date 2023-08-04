@@ -87,6 +87,18 @@ public class DefaultExceptionHandler {
 
 
 
+    @ExceptionHandler(InvalidAddUserException.class)
+    public String handleInvalidAddUserException(InvalidAddUserException iaue, RedirectAttributes redirectAttributes){
+        log.error("InvalidAddUserException thrown: {} " , iaue.getMessage(), iaue);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iaue.getMessage());
+        return "redirect:/user/add";
+    }
+    @ExceptionHandler(InvalidUpdateUserException.class)
+    public String handleInvalidUpdateUserException(InvalidUpdateUserException iuue, RedirectAttributes redirectAttributes){
+        log.error("InvalidUpdateUserException thrown: {} " , iuue.getMessage(), iuue);
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iuue.getMessage());
+        return "redirect:/user/update";
+    }
 
 
 }

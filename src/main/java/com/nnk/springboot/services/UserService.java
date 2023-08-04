@@ -9,10 +9,12 @@ public interface UserService {
 
     User getUserByUsername(String username);
 
-   void updateUser(User user);
+   void saveUser(User user);
+
+    void updateUser(User updatedUser, int userToUpdateId);
 
    User getUserById(int id);
 
-    void deleteUser(User user);
+    void deleteUserById(int id);
 
 }
