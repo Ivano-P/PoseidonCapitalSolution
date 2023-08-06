@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -30,8 +33,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
             userDetails = User
                     .withUsername(user.getUsername())
+                    .passwordEncoder(passwordEncoder::encode)
                     .password(user.getPassword())
-                    .roles(user.getRole())
+                    .roles("ROLE_" + user.getRole())
                     .build();
 
         return userDetails;

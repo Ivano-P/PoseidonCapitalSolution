@@ -17,5 +17,5 @@ public class PoseidonCapitalSolutionsApplication {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-    
+
 }
