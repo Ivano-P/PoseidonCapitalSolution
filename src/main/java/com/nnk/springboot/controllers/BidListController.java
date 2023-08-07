@@ -34,8 +34,7 @@ public class BidListController {
         log.info("home method called with : {}, {}", model, principal);
 
         model.addAttribute("bidLists", bidListService.getAllBids());
-        User currentUser = userService.getUserByUsername(principal.getName());
-        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("currentUser", userService.getUserByUsername(principal.getName()));
 
         return "bidList/list";
     }

@@ -76,7 +76,7 @@ public class RuleNameController {
         return REDIRECT_RULE_NAME_LIST;
     }
 
-    @GetMapping("/ruleName/delete/{id}")
+    @PostMapping("/ruleName/delete/{id}")
     public String deleteRuleName(@PathVariable("id") Integer id) {
         log.info("deleteRuleName method called with: {}", id);
         ruleNameService.deleteRuleNameById(id);

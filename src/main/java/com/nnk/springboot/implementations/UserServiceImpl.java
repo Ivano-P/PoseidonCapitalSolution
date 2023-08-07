@@ -59,4 +59,15 @@
             userRepository.deleteById(id);
         }
 
+        public void creatDefaultAdminUser() {
+            Optional<User> userOptional = userRepository.findByUsername("defaultAdmin");
+            if(userOptional.isEmpty()){
+                User defaultAdminUser = new User();
+                defaultAdminUser.setFullname("defaultAdminUser");
+                defaultAdminUser.setUsername("defaultAdmin");
+                defaultAdminUser.setPassword("password");
+                defaultAdminUser.setRole("ADMIN");
+               saveUser(defaultAdminUser);
+            }
+        }
     }
