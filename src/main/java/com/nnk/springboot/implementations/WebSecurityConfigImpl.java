@@ -43,6 +43,8 @@ public class WebSecurityConfigImpl implements WebSecurityConfig {
         MvcRequestMatcher homeMatcher = new MvcRequestMatcher(handlerMappingIntrospector,
                 "/home");
 
+
+
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(homeMatcher).permitAll()

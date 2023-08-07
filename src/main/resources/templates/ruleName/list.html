@@ -10,6 +10,8 @@
 <div class="container">
 	<div class="row">
 		<div class="col-6">
+			<a href="/user/list" th:if="${currentUser.role == 'ADMIN'}">User</a>
+				<span th:if="${currentUser.role == 'ADMIN'}">&nbsp;|&nbsp;</span>
 			<a href="/bidList/list">Bid List</a>&nbsp;|&nbsp;
 			<a href="/curvePoint/list">Curve Points</a>&nbsp;|&nbsp;
 			<a href="/rating/list">Ratings</a>&nbsp;|&nbsp;
@@ -18,7 +20,7 @@
 		</div>
 		<div class="col-6 text-right">
 			Logged in user: <b th:inline="text"  class="user"> <span th:text ="${currentUser.username}"></span> </b>
-			<form th:action="@{/app-logout}" method="POST">
+			<form th:action="@{/logout}" method="POST">
 				<input type="submit" value="Logout"/>
 			</form>
 		</div>
