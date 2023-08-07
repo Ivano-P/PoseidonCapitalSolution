@@ -1,6 +1,8 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -15,12 +17,15 @@ public class Trade {
     @Column(name = "trade_id")
     Integer tradeId;
 
+    @NotBlank
     @Column(name = "account")
     String account;
 
+    @NotBlank
     @Column(name = "type")
     String type;
 
+    @NotNull
     @Column(name = "buy_quantity")
     Double buyQuantity;
 

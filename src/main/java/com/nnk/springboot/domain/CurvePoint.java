@@ -25,9 +25,11 @@ public class CurvePoint {
     @Column(name = "as_of_date")
     Timestamp asOfDate;
 
+    @NotNull
     @Column(name = "term")
     Double term;
 
+    @NotNull
     @Column(name = "value")
     Double value;
 

@@ -65,7 +65,7 @@ public class UserController {
 
     @PostMapping("/user/update/{id}")
     public String updateUser(@PathVariable("id") Integer id, @Valid User user,
-                             BindingResult result, Model model) {
+                             BindingResult result ){
         log.info("updateUser method called with: {}, {}, {}", id, user, result);
         if (result.hasErrors()) {
             throw new InvalidUpdateUserException();
