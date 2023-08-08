@@ -48,7 +48,8 @@ public class UserController {
     public String validate(@Valid User user, BindingResult result, Model model) {
         log.info("validate method called with: {}, {}, {}", user, result,model);
         if (result.hasErrors()) {
-            throw new InvalidAddUserException();
+            log.error("Invalid user");
+            return "user/add";
         }else {
             userService.saveUser(user);
         }
@@ -68,7 +69,8 @@ public class UserController {
                              BindingResult result ){
         log.info("updateUser method called with: {}, {}, {}", id, user, result);
         if (result.hasErrors()) {
-            throw new InvalidUpdateUserException();
+            log.error("Invalid user");
+            return "user/update";
         }else{
             userService.updateUser(user, id);
         }

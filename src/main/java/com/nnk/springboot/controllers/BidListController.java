@@ -54,7 +54,8 @@ public class BidListController {
         log.info("validate called with bid:  {}, {}", bid, result);
 
         if(result.hasErrors()){
-            throw new InvalidAddBidListException();
+            log.error("Invalid bid list");
+            return "bidList/add";
         }else{
             bidListService.saveBidList(bid);
         }
@@ -77,7 +78,8 @@ public class BidListController {
         log.info("updateBid method called with : {}, {}, {}", id, bidList, result);
 
         if(result.hasErrors()){
-            throw new InvalidUpdateBidListException();
+            log.error("Invalid bid list");
+            return "bidList/update";
         }else{
             bidListService.updateBidList(bidList, id);
         }
@@ -87,7 +89,6 @@ public class BidListController {
     @PostMapping("/bidList/delete/{id}")
     public String deleteBid(@PathVariable("id") Integer id) {
         log.info("deleteBid method called for bid id: {} ", id);
-
         bidListService.deleteBidListById(id);
         return REDIRECT_BID_LIST_LIST;
     }

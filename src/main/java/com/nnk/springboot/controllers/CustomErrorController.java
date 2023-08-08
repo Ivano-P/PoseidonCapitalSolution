@@ -17,7 +17,7 @@ import java.security.Principal;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Controller
 public class CustomErrorController implements ErrorController {
-
+/*
     private final UserService userService;
     private static final String ACCESS_DENIED_MESSAGE = "You must be an administrator to access this page";
     @RequestMapping("/error")
@@ -27,5 +27,7 @@ public class CustomErrorController implements ErrorController {
         model.addAttribute("errorMsg", ACCESS_DENIED_MESSAGE);
         return "403";
     }
+
+ */
 
 }

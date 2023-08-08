@@ -50,7 +50,8 @@ public class RuleNameController {
     public String validate(@Valid RuleName ruleName, BindingResult result) {
         log.info("validate method called with: {}, {}", ruleName, result);
         if(result.hasErrors()){
-            throw new InvalidAddRuleNameException();
+            log.error("Invalid rule");
+            return "ruleName/add";
         }else{
             ruleNameService.saveRuleName(ruleName);
         }
@@ -69,7 +70,8 @@ public class RuleNameController {
                              BindingResult result) {
         log.info("updateRuleName method called with: {}, {}, {}", id, ruleName, result);
         if(result.hasErrors()){
-            throw new InvalidUpdateRuleNameException();
+            log.error("Invalid rule");
+            return "ruleName/update";
         }else{
             ruleNameService.updateRuleName(ruleName, id);
         }

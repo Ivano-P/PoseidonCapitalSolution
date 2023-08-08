@@ -53,7 +53,8 @@ public class RatingController {
     public String validate(@Valid Rating rating, BindingResult result) {
         log.info("validate method called with: {}, {}", rating, result);
         if(result.hasErrors()){
-            throw new InvalidAddRatingException();
+            log.error("Invalid rating");
+            return "rating/add";
         }else{
             ratingService.saveRating(rating);
         }
@@ -72,7 +73,8 @@ public class RatingController {
                              BindingResult result) {
         log.info("updateRating method called with: {}, {}, {}", id, rating, result);
         if(result.hasErrors()){
-            throw new InvalidUpdateRatingException();
+            log.error("Invalid rating");
+            return "rating/update";
         }else{
             ratingService.updateRating(rating, id);
         }

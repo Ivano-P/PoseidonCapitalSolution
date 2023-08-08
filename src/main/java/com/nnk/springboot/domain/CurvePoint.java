@@ -29,12 +29,12 @@ public class CurvePoint {
     Timestamp asOfDate;
 
     @NotNull(message = "term is mandatory")
-    @DecimalMin(value = "1.0", message = "term must be at the least 1.0")
+    @DecimalMin(value = "1.00", message = "term must be at the least 1.0")
     @Column(name = "term")
     Double term;
 
     @NotNull(message = "value is mandatory")
-    @DecimalMin(value = "1.0", message = "value must be at the least 1.0")
+    @DecimalMin(value = "1.00", message = "value must be at the least 1.0")
     @Column(name = "value")
     Double value;
 

@@ -54,7 +54,8 @@ public class CurveController {
         log.info("validate method called with: {}, {}", curvePoint, result);
 
         if(result.hasErrors()){
-            throw new InvalidAddCurvePointException();
+            log.error("Invalid curve point");
+            return "curvePoint/add";
         }else{
             curveService.saveCurvePoint(curvePoint);
         }
@@ -75,7 +76,8 @@ public class CurveController {
                             BindingResult result) {
         log.info("updateBid method called with: {}, {}, {}", id, curvePoint, result);
         if(result.hasErrors()){
-            throw new InvalidUpdateCurvePointException();
+            log.error("Invalid curve point");
+            return "curvePoint/update";
         }else{
             curveService.updateCurvePoint(curvePoint, id);
         }

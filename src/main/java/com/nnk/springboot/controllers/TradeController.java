@@ -47,7 +47,8 @@ public class TradeController {
     public String validate(@Valid Trade trade, BindingResult result) {
         log.info("validate method called with: {}, {}", trade, result);
         if(result.hasErrors()){
-            throw new InvalidAddTradeException();
+            log.error("Invalid trade");
+            return "trade/add";
         }else{
             tradeService.saveTrade(trade);
         }
@@ -66,7 +67,8 @@ public class TradeController {
                              BindingResult result) {
         log.info("updateTrade method called with: {}, {}, {}", id, trade, result);
         if(result.hasErrors()){
-            throw new InvalidAddTradeException();
+            log.error("Invalid trade");
+            return "trade/update";
         }else{
             tradeService.updateTrade(trade, id);
         }
