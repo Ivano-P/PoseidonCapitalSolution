@@ -17,17 +17,19 @@ public class Rating {
     @Column(name = "id")
     Integer id;
 
-    @Pattern(regexp = "^([A-Da-d]{1,3}([+-/])?|\\\\d|/)$", message = "Invalid rating, rating should be something like AAA, A-, Caa3, ... ")
+    @Pattern(regexp = "^(|[A-Da-d]{1,3}([+-/])?|\\\\d|/)$", message = "Invalid rating, rating should be something like AAA, A-, Caa3, ... ")
+    @NotBlank(message = "moody rating is mandatory")
     @Column(name = "moody_rating")
     String moodysRating;
 
 
-    @Pattern(regexp = "^([A-Da-d]{1,3}([+-])?|\\\\d)$", message = "Invalid rating, rating should be something like AAA, A-, Caa3, ... ")
+    @Pattern(regexp = "^(|[A-Da-d]{1,3}([+-])?|\\\\d)$", message = "Invalid rating, rating should be something like AAA, A-, Caa3, ... ")
     @Column(name = "sand_p_rating")
     String sandPRating;
 
 
-    @Pattern(regexp = "^([A-Da-d]{1,3}([+-])?|\\\\d)$", message = "Invalid rating, rating should be something like AAA, A-, Caa3, ... ")
+    @Pattern(regexp = "^(|[A-Da-d]{1,3}([+-])?|\\\\d)$", message = "Invalid rating, rating should be something like AAA, A-, Caa3, ... ")
+
     @Column(name = "fitch_rating")
     String fitchRating;
 

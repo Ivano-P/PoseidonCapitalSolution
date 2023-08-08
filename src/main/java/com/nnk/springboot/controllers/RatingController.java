@@ -1,9 +1,6 @@
 package com.nnk.springboot.controllers;
 
-import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.nnk.springboot.domain.Rating;
-import com.nnk.springboot.exceptions.InvalidAddRatingException;
-import com.nnk.springboot.exceptions.InvalidUpdateRatingException;
 import com.nnk.springboot.services.RatingService;
 import com.nnk.springboot.services.UserService;
 import lombok.AllArgsConstructor;
