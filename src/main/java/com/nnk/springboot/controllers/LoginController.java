@@ -28,6 +28,7 @@ public class LoginController{
         return mav;
     }
 
+    /*
     @GetMapping("secure/article-details")
     public ModelAndView getAllUserArticles() {
         log.info("getAllUserArticles method called");
@@ -36,7 +37,7 @@ public class LoginController{
         mav.setViewName("user/list");
         return mav;
     }
-    
+
     @GetMapping("error")
     public ModelAndView error() {
         log.error("error method called");
@@ -46,6 +47,8 @@ public class LoginController{
         mav.setViewName("403");
         return mav;
     }
+
+     */
 
 
 }

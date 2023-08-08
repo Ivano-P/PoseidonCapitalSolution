@@ -16,7 +16,7 @@ public class User {
     @Column(name = "id")
     private Integer id;
 
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Only alphabetic characters are allowed.")
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Only alphabetic characters and numbers are allowed.")
     @NotBlank(message = "Username is mandatory")
     @Column(name = "username")
     private String username;

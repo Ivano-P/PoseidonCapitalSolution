@@ -12,16 +12,43 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
+/**
+ * This class provides the implementation for web security configurations.
+ * <p>
+ * It sets up configurations for request authorization, login behavior, and session management.
+ * </p>
+ *
+ * @author Ivano PETTY
+ */
 @Log4j2
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfigImpl implements WebSecurityConfig {
 
+    /**
+     * Service responsible for user details like username, full name, password and role.
+     */
     private final CustomUserDetailsService customUserDetailsService;
 
+    /**
+     * Provides functionality for examination of handler mappings, in this case it's used to creat MvcRequestMatcher
+     */
     private final HandlerMappingIntrospector handlerMappingIntrospector;
 
+    /**
+     * Configures and returns a {@link SecurityFilterChain} bean,
+     * which encapsulates the original Spring Security filter chain.
+     * <p>
+     * This method sets up MVC matchers for paths,
+     * specifies authorization requirements for different request patterns,
+     * and configures login and logout behaviors.
+     * </p>
+     *
+     * @param httpSecurity Used for building custom security configurations.
+     * @return A built {@link SecurityFilterChain} with the specified configurations.
+     * @throws Exception if there's an error during the configuration.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("securityFilterChain method called with: {}", httpSecurity );
