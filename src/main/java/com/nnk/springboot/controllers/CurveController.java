@@ -1,8 +1,6 @@
 package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.CurvePoint;
-import com.nnk.springboot.exceptions.InvalidAddCurvePointException;
-import com.nnk.springboot.exceptions.InvalidUpdateCurvePointException;
 import com.nnk.springboot.services.CurveService;
 import com.nnk.springboot.services.UserService;
 import lombok.AllArgsConstructor;
@@ -11,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
@@ -84,7 +79,7 @@ public class CurveController {
         return REDIRECT_CURVE_POINT_LIST;
     }
 
-    @PostMapping("/curvePoint/delete/{id}")
+    @GetMapping("/curvePoint/delete/{id}")
     public String deleteBid(@PathVariable("id") Integer id) {
         log.info("deleteBid method called with: {}", id);
         curveService.deleteCurvePointById(id);

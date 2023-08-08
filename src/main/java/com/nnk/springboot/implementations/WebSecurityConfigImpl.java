@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,11 +26,7 @@ public class WebSecurityConfigImpl implements WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("securityFilterChain method called with: {}", httpSecurity );
 
-        //MVC match for bidlist/list that requires admin role to access
-        MvcRequestMatcher bidListListMatcher = new MvcRequestMatcher(handlerMappingIntrospector,
-                "/bidList/list");
-
-        //MVC match for path that doesnt need authentication
+        //MVC match for path that doesn't need authentication
         MvcRequestMatcher userListMatcher = new MvcRequestMatcher(handlerMappingIntrospector,
                 "/user/list");
         MvcRequestMatcher userAddMatcher = new MvcRequestMatcher(handlerMappingIntrospector,

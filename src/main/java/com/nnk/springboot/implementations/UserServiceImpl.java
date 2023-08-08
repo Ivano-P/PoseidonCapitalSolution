@@ -1,5 +1,6 @@
     package com.nnk.springboot.implementations;
 
+    import com.nnk.springboot.controllers.LoginController;
     import com.nnk.springboot.domain.User;
     import com.nnk.springboot.repositories.UserRepository;
     import com.nnk.springboot.services.UserService;
@@ -8,7 +9,9 @@
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.security.crypto.password.PasswordEncoder;
     import org.springframework.stereotype.Service;
+    import org.springframework.ui.Model;
 
+    import java.security.Principal;
     import java.util.List;
     import java.util.NoSuchElementException;
     import java.util.Optional;
@@ -20,6 +23,7 @@
 
         private final UserRepository userRepository;
         private final PasswordEncoder passwordEncoder;
+        private final LoginController loginController;
 
         public List<User> getAllUsers(){
             log.info("getAllUsers method called");

@@ -1,9 +1,6 @@
 package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.RuleName;
-import com.nnk.springboot.exceptions.InvalidAddRuleNameException;
-import com.nnk.springboot.exceptions.InvalidUpdateRuleNameException;
-import com.nnk.springboot.services.BidListService;
 import com.nnk.springboot.services.RuleNameService;
 import com.nnk.springboot.services.UserService;
 import lombok.AllArgsConstructor;
@@ -12,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
@@ -78,7 +72,7 @@ public class RuleNameController {
         return REDIRECT_RULE_NAME_LIST;
     }
 
-    @PostMapping("/ruleName/delete/{id}")
+    @GetMapping("/ruleName/delete/{id}")
     public String deleteRuleName(@PathVariable("id") Integer id) {
         log.info("deleteRuleName method called with: {}", id);
         ruleNameService.deleteRuleNameById(id);

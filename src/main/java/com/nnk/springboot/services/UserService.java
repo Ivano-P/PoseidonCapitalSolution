@@ -1,7 +1,9 @@
 package com.nnk.springboot.services;
 
 import com.nnk.springboot.domain.User;
+import org.springframework.ui.Model;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface UserService {

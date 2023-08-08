@@ -5,15 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.security.Principal;
 
 
 //@RequestMapping("app")
 @Log4j2
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Controller
-public class LoginController {
+public class LoginController{
 
     private final UserRepository userRepository;
 
@@ -33,5 +36,16 @@ public class LoginController {
         mav.setViewName("user/list");
         return mav;
     }
+    
+    @GetMapping("error")
+    public ModelAndView error() {
+        log.error("error method called");
+        ModelAndView mav = new ModelAndView();
+        String errorMessage= "You are not authorized for the requested data.";
+        mav.addObject("errorMsg", errorMessage);
+        mav.setViewName("403");
+        return mav;
+    }
+
 
 }

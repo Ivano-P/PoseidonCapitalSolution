@@ -2,8 +2,6 @@ package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.domain.User;
-import com.nnk.springboot.exceptions.InvalidAddBidListException;
-import com.nnk.springboot.exceptions.InvalidUpdateBidListException;
 import com.nnk.springboot.services.BidListService;
 import com.nnk.springboot.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,19 +95,6 @@ class BidListControllerTest {
     }
 
     @Test
-    void testValidate_HasErrors() throws Exception {
-        // Arrange
-        BindingResult result = mock(BindingResult.class);
-        when(result.hasErrors()).thenReturn(true);
-
-        // Act and Assert
-        assertThrows(InvalidAddBidListException.class,
-                () -> bidListController.validate(mockBid, result));
-
-        verify(bidListService, never()).saveBidList(any(BidList.class));
-    }
-
-    @Test
     void testShowUpdateForm() {
         // Arrange
         int id = 1;
@@ -135,18 +120,6 @@ class BidListControllerTest {
         // Assert
         assertThat(viewName).isEqualTo("redirect:/bidList/list");
         verify(bidListService, times(1)).updateBidList(mockBid, id);
-    }
-
-    @Test
-    void testUpdateBidWithError() {
-        // Arrange
-        int id = 1;
-        when(bindingResult.hasErrors()).thenReturn(true);
-
-        //Act and Assert
-        assertThrows(InvalidUpdateBidListException.class,
-                () -> bidListController.updateBid(id, mockBid, bindingResult));
-        verify(bidListService, never()).updateBidList(mockBid, id);
     }
 
     @Test
