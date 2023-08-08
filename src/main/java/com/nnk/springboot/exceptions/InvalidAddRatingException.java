@@ -2,6 +2,6 @@ package com.nnk.springboot.exceptions;
 
 public class InvalidAddRatingException extends RuntimeException{
     public InvalidAddRatingException(){
-        super("this rating is invalid");
+        super("there must be at the least one type of rating");
     }
 }

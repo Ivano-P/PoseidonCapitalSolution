@@ -103,7 +103,7 @@ class UserControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         //Act
-        String result = userController.updateUser(1, mockUser, bindingResult, model);
+        String result = userController.updateUser(1, mockUser, bindingResult);
 
         //Assert
         verify(userService, times(1)).updateUser(mockUser, 1);

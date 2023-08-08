@@ -65,7 +65,7 @@
                 User defaultAdminUser = new User();
                 defaultAdminUser.setFullname("defaultAdminUser");
                 defaultAdminUser.setUsername("defaultAdmin");
-                defaultAdminUser.setPassword("password");
+                defaultAdminUser.setPassword("Password1*");
                 defaultAdminUser.setRole("ADMIN");
                saveUser(defaultAdminUser);
             }

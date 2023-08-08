@@ -1,8 +1,7 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -17,15 +16,18 @@ public class BidList {
     @Column(name="id")
     Integer id;
 
-    @NotBlank
+    @NotBlank(message = "Account is mandatory")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only alphabetic characters and spaces are allowed.")
     @Column(name = "account")
     String account;
 
-    @NotBlank
+    @NotBlank(message = "Type is mandatory")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only alphabetic characters and spaces are allowed.")
     @Column(name="type")
     String type;
 
-    @Min(value = 1, message = "Bid must be at the least 1")
+    @DecimalMin(value = "1.0", message = "Bid must be at the least 1.0")
+    @NotNull(message = "bid quantity is mandatory")
     @Column(name="bid_quantity")
     Double bidQuantity;
 

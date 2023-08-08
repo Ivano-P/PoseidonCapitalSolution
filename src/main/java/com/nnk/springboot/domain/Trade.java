@@ -3,6 +3,7 @@ package com.nnk.springboot.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -17,15 +18,18 @@ public class Trade {
     @Column(name = "trade_id")
     Integer tradeId;
 
-    @NotBlank
+    @NotBlank(message = "Account is mandatory")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only alphabetic characters and spaces are allowed.")
     @Column(name = "account")
     String account;
 
-    @NotBlank
+    @NotBlank(message = "Account is mandatory")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only alphabetic characters and spaces are allowed.")
     @Column(name = "type")
     String type;
 
-    @NotNull
+    @NotNull(message = "buy quantity is mandatory")
+
     @Column(name = "buy_quantity")
     Double buyQuantity;
 

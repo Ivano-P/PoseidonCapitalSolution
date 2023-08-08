@@ -1,6 +1,8 @@
 package com.nnk.springboot.implementations;
 
 import com.nnk.springboot.domain.Rating;
+import com.nnk.springboot.exceptions.InvalidAddRatingException;
+import com.nnk.springboot.exceptions.InvalidUpdateRatingException;
 import com.nnk.springboot.repositories.RatingRepository;
 import com.nnk.springboot.services.RatingService;
 import lombok.AllArgsConstructor;
@@ -23,6 +25,10 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public void saveRating(Rating rating) {
         log.info("saveRating method called with : {}", rating);
+        //rating must have at the least one type  or ratting to be valid, but one or two of them can be blank.
+        if(rating.getFitchRating().isBlank() && rating.getMoodysRating().isBlank() && rating.getSandPRating().isBlank()){
+            throw new InvalidAddRatingException();
+        }
         ratingRepository.save(rating);
     }
 
@@ -34,6 +40,11 @@ public class RatingServiceImpl implements RatingService {
         ratingToUpdate.setSandPRating(updatedRating.getSandPRating());
         ratingToUpdate.setFitchRating(updatedRating.getFitchRating());
         ratingToUpdate.setOrderNumber(updatedRating.getOrderNumber());
+
+        //rating must have at the least one type  or ratting to be valid, but one or two of them can be blank.
+        if(ratingToUpdate.getFitchRating().isBlank() && ratingToUpdate.getMoodysRating().isBlank() && ratingToUpdate.getSandPRating().isBlank()){
+            throw new InvalidUpdateRatingException();
+        }
         saveRating(ratingToUpdate);
     }
 

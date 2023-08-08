@@ -47,7 +47,6 @@ public class DefaultExceptionHandler {
         redirectAttributes.addFlashAttribute(ERROR_MESSAGE, iare.getMessage());
         return "redirect:/rating/add";
     }
-
     @ExceptionHandler(InvalidUpdateRatingException.class)
     public String handleInvalidUpdateRatingException(InvalidUpdateRatingException iure, RedirectAttributes redirectAttributes){
         log.error("InvalidUpdateRatingException thrown: {} " , iure.getMessage(), iure);
