@@ -1,10 +1,7 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
@@ -18,7 +15,6 @@ public class Rating {
     Integer id;
 
     @Pattern(regexp = "^(|[A-Da-d]{1,3}([+-/])?|\\\\d|/)$", message = "Invalid rating, rating should be something like AAA, A-, Caa3, ... ")
-    @NotBlank(message = "moody rating is mandatory")
     @Column(name = "moody_rating")
     String moodysRating;
 
