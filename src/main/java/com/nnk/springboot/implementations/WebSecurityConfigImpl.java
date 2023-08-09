@@ -14,9 +14,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
  * This class provides the implementation for web security configurations.
- * <p>
+ * </br>
  * It sets up configurations for request authorization, login behavior, and session management.
- * </p>
  *
  * @author Ivano PETTY
  */

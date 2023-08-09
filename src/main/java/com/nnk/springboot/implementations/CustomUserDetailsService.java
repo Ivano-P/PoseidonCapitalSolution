@@ -11,6 +11,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service class responsible for handling custom user-specific data retrieval during the authentication process.
+ * This service integrates with Spring Security's {@link UserDetailsService} to fetch user details
+ * based on the provided username. The actual user data is fetched from a {@link UserRepository}.
+ *
+ * @author Ivano PETY
+ */
 @Service
 @Log4j2
 @AllArgsConstructor(onConstructor = @__(@Autowired))
