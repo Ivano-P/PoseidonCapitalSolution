@@ -51,11 +51,6 @@ public class CurveServiceImpl implements CurveService {
         saveCurvePoint(curvePointToUpdate);
     }
 
-    public void deleteCurvePoint(CurvePoint curvePoint) {
-        log.info("deleteCurvePoint method called with : {}", curvePoint);
-        curvePointRepository.delete(curvePoint);
-    }
-
     public void deleteCurvePointById(int id) {
         log.info("deleteCurvePointById method called with : {}", id);
         curvePointRepository.deleteById(id);

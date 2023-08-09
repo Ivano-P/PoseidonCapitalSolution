@@ -99,14 +99,6 @@ class CurveServiceTest {
     }
 
     @Test
-    void testDeleteCurvePoint() {
-        //Act
-        curveService.deleteCurvePoint(mockCurvePoint);
-        //Assert
-        verify(curvePointRepository, times(1)).delete(mockCurvePoint);
-    }
-
-    @Test
     void testDeleteCurvePointById() {
         //Act
         curveService.deleteCurvePointById(1);
