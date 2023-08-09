@@ -25,6 +25,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    /**
+     * This method overrides the loadUserByUsername() for Spring Security's {@link UserDetailsService} and retrieves
+     * the user data from a {@link UserRepository}. With the user data, the user details is constructed then returned.
+     *
+     */
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
