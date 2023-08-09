@@ -4,9 +4,11 @@
     import com.nnk.springboot.domain.User;
     import com.nnk.springboot.repositories.UserRepository;
     import com.nnk.springboot.services.UserService;
+    import jakarta.validation.Valid;
     import lombok.AllArgsConstructor;
     import lombok.extern.log4j.Log4j2;
     import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.beans.factory.annotation.Value;
     import org.springframework.security.crypto.password.PasswordEncoder;
     import org.springframework.stereotype.Service;
     import org.springframework.ui.Model;
@@ -23,7 +25,6 @@
 
         private final UserRepository userRepository;
         private final PasswordEncoder passwordEncoder;
-        private final LoginController loginController;
 
         public List<User> getAllUsers(){
             log.info("getAllUsers method called");
@@ -69,9 +70,10 @@
                 User defaultAdminUser = new User();
                 defaultAdminUser.setFullname("defaultAdminUser");
                 defaultAdminUser.setUsername("defaultAdmin");
-                defaultAdminUser.setPassword("Password1*");
+                defaultAdminUser.setPassword(System.getenv("PCS_DEFAULT_ADMIN_PASSWORD"));
+
                 defaultAdminUser.setRole("ADMIN");
-               saveUser(defaultAdminUser);
+                saveUser(defaultAdminUser);
             }
         }
     }
