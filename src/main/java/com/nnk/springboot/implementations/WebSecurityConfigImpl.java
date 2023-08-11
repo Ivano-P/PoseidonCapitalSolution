@@ -38,8 +38,6 @@ public class WebSecurityConfigImpl implements WebSecurityConfig {
      */
     private final HandlerMappingIntrospector handlerMappingIntrospector;
 
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
-
     /**
      * Configures and returns a {@link SecurityFilterChain} bean,
      * which encapsulates the original Spring Security filter chain.
@@ -73,12 +71,13 @@ public class WebSecurityConfigImpl implements WebSecurityConfig {
                         .requestMatchers(homeMatcher).permitAll()
                         .requestMatchers(userListMatcher, userAddMatcher, userUpdateMatcher).hasRole("ADMIN")
                         .anyRequest().authenticated())
-                .exceptionHandling(Customizer.withDefaults().)
+                .exceptionHandling(e -> e.accessDeniedHandler((new CustomAccessDeniedHandler())))
                 .formLogin(auth -> auth.defaultSuccessUrl("/bidList/list", true))
                 .logout(auth -> auth.logoutSuccessUrl("/home").invalidateHttpSession(true).deleteCookies("JSESSIONID"))
                 .userDetailsService(customUserDetailsService)
                 .sessionManagement(session -> session.maximumSessions(1)
                 );
+
 
         return httpSecurity.build();
     }
