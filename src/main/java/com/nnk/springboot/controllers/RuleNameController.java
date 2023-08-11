@@ -37,8 +37,21 @@ public class RuleNameController {
     public String addRuleForm(RuleName ruleName, Model model) {
         log.info("addRatingForm method called with: {}, {}", ruleName, model);
         model.addAttribute("ruleName", new RuleName());
+
         return "ruleName/add";
     }
+
+    /*
+    @GetMapping("/bidList/add")
+    public String addBidForm(BidList bid, Principal principal, Model model) {
+        log.info("addBidForm called with bid:  {}, {}", bid, model);
+
+        model.addAttribute("bidLists", new BidList());
+        model.addAttribute("currentUser", userService.getUserByUsername(principal.getName()));
+
+        return "bidList/add";
+    }
+     */
 
     @PostMapping("/ruleName/validate")
     public String validate(@Valid RuleName ruleName, BindingResult result) {

@@ -15,5 +15,4 @@ public class OnStartUp implements CommandLineRunner {
         userService.creatDefaultAdminUser();
     }
 
-
 }
