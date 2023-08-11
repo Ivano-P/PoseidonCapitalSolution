@@ -11,9 +11,6 @@
 	<div class="row">
 		<h2>Add New Rating</h2>
 	</div>
-	<div  th:if="${errorMsg}" id="error-message" role="alert">
-		<p th:text="${errorMsg}"></p>
-	</div>
 	<div class="row">
 		<form action="#" th:action="@{/rating/validate}" th:object="${rating}" method="post" class="form-horizontal" style="width: 100%">
 			<div class="form-group">
