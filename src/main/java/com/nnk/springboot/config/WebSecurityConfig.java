@@ -1,27 +1,85 @@
 package com.nnk.springboot.config;
 
+import com.nnk.springboot.error.CustomAccessDeniedHandler;
+import com.nnk.springboot.implementations.CustomUserDetailsService;
+import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.stereotype.Service;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
- * Defines the configuration required for securing web requests in the application.
- * Implementations of this interface should provide specific configurations for
- * security aspects such as authentication, authorization, and session management.
+ * This class provides the implementation for web security configurations.
+ * </br>
+ * It sets up configurations for request authorization, login behavior, and session management.
  *
- * <p>This interface is crucial for integrating Spring Security into the application,
- * ensuring that specific endpoints are secured according to business requirements.</p>
- *
+ * @author Ivano PETTY
  */
-@Service
-public interface WebSecurityConfig {
+@Log4j2
+@AllArgsConstructor(onConstructor = @__(@Autowired))
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig {
 
     /**
-     * Configures and returns the security filters to be used by the application.
-     * This method should provide specific details about which endpoints require
-     * authentication, which roles have access to specific endpoints, among other
-     * security configurations.
-     *
+     * Service responsible for user details like username, full name, password and role.
      */
-    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception;
+    private final CustomUserDetailsService customUserDetailsService;
+
+    /**
+     * Provides functionality for examination of handler mappings, in this case it's used to creat MvcRequestMatcher
+     */
+    private final HandlerMappingIntrospector handlerMappingIntrospector;
+
+    /**
+     * Configures and returns a {@link SecurityFilterChain} bean,
+     * which encapsulates the original Spring Security filter chain.
+     * <p>
+     * This method sets up MVC matchers for paths,
+     * specifies authorization requirements for different request patterns,
+     * and configures login and logout behaviors.
+     * </p>
+     *
+     * @param httpSecurity Used for building custom security configurations.
+     * @return A built {@link SecurityFilterChain} with the specified configurations.
+     * @throws Exception if there's an error during the configuration.
+     */
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        log.info("securityFilterChain method called with: {}", httpSecurity );
+        //MVC match for path that doesn't need authentication
+        MvcRequestMatcher userListMatcher = new MvcRequestMatcher(handlerMappingIntrospector,
+                "/user/list");
+        MvcRequestMatcher userAddMatcher = new MvcRequestMatcher(handlerMappingIntrospector,
+                "/user/add");
+
+        MvcRequestMatcher userUpdateMatcher = new MvcRequestMatcher(handlerMappingIntrospector,
+                "/user/update");
+
+        MvcRequestMatcher homeMatcher = new MvcRequestMatcher(handlerMappingIntrospector,
+                "/home");
+
+        httpSecurity
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(homeMatcher).permitAll()
+                        .requestMatchers(userListMatcher, userAddMatcher, userUpdateMatcher).hasRole("ADMIN")
+                        .anyRequest().authenticated())
+                .exceptionHandling(e -> e.accessDeniedHandler((new CustomAccessDeniedHandler())))
+                .formLogin(auth -> auth.defaultSuccessUrl("/bidList/list", true))
+                .logout(auth -> auth.logoutSuccessUrl("/home").invalidateHttpSession(true).deleteCookies("JSESSIONID"))
+                .userDetailsService(customUserDetailsService)
+                .sessionManagement(session -> session.maximumSessions(1)
+                );
+
+
+        return httpSecurity.build();
+    }
+
+
+
 }
