@@ -1,5 +1,6 @@
 package com.nnk.springboot.implementations;
 
+import com.nnk.springboot.domain.Trade;
 import com.nnk.springboot.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,13 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
  * This service integrates with Spring Security's {@link UserDetailsService} to fetch user details
  * based on the provided username. The actual user data is fetched from a {@link UserRepository}.
  *
- * @author Ivano PETY
  */
 @Service
 @Log4j2
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class CustomUserDetailsService implements UserDetailsService {
 
+    /** The repository responsible for managing user data. */
     private final UserRepository userRepository;
 
     /**

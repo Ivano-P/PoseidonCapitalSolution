@@ -1,6 +1,7 @@
 package com.nnk.springboot.implementations;
 
 import com.nnk.springboot.domain.BidList;
+import com.nnk.springboot.domain.Rating;
 import com.nnk.springboot.repositories.BidListRepository;
 import com.nnk.springboot.services.BidListService;
 import jakarta.transaction.Transactional;
@@ -17,7 +18,6 @@ import java.util.Optional;
  * Implementation for {@link BidListService}.
  * Provides CRUD operations for {@link BidList} objects.
  *
- * @author [Your Name]
  */
 @Log4j2
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,7 +29,7 @@ public class BidListServiceImpl implements BidListService {
     private final BidListRepository bidListRepository;
 
     /**
-     * Saves a given bid list.
+     * Saves a given {@link BidList}.
      *
      * @param bidList the bid list to be saved.
      */
@@ -39,7 +39,7 @@ public class BidListServiceImpl implements BidListService {
     }
 
     /**
-     * Updates an existing bid list identified by the provided ID.
+     * Updates an existing {@link BidList} identified by the provided ID.
      *
      * @param updatedBidlist      the updated bid list data.
      * @param bidListToUpdateId   the ID of the bid list to be updated.
@@ -54,7 +54,7 @@ public class BidListServiceImpl implements BidListService {
     }
 
     /**
-     * Fetches all available bids.
+     * Fetches all available {@link BidList}.
      *
      * @return a list of all bid lists.
      */
@@ -64,7 +64,7 @@ public class BidListServiceImpl implements BidListService {
     }
 
     /**
-     * Retrieves a bid list by its ID.
+     * Retrieves a {@link BidList} by its ID.
      *
      * @param id the ID of the bid list to be retrieved.
      * @return the bid list if found, otherwise throw NoSuchElementException.
@@ -78,7 +78,7 @@ public class BidListServiceImpl implements BidListService {
 
 
     /**
-     * Deletes a given bid list.
+     * Deletes a given {@link BidList}.
      *
      * @param bidList the bid list to be deleted.
      */
@@ -88,7 +88,7 @@ public class BidListServiceImpl implements BidListService {
     }
 
     /**
-     * Deletes a bid list by its ID.
+     * Deletes {@link BidList} by its ID.
      *
      * @param id the ID of the bid list to be deleted.
      */
