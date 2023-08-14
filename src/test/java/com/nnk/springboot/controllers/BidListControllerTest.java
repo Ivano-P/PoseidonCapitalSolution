@@ -10,14 +10,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.security.Principal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(MockitoExtension.class)
 class BidListControllerTest {
@@ -42,8 +48,12 @@ class BidListControllerTest {
 
     BidList mockBid;
 
+    private MockMvc mockMvc;
+
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(bidListController).build();
+
         mockBid = new BidList();
         mockBid.setAccount("testAccount");
         mockBid.setType("mockType");
@@ -51,32 +61,29 @@ class BidListControllerTest {
     }
 
     @Test
-    void testHome() {
+    void testHome() throws Exception {
         //Arrange
         when(principal.getName()).thenReturn("testUser");
         when(userService.getUserByUsername(anyString())).thenReturn(new User());
 
-        //Act
-        String viewName = bidListController.home(model, principal);
+        // Act & Assert
+        mockMvc.perform(get("/bidList/list").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("bidList/list"));
 
-        //Assert
-        assertThat(viewName).isEqualTo("bidList/list");
         verify(bidListService, times(1)).getAllBids();
         verify(userService, times(1)).getUserByUsername(anyString());
     }
 
-
     @Test
-    void testAddBidForm(){
+    void testAddBidForm() throws Exception{
         //Arrange
         when(principal.getName()).thenReturn("testUser");
         when(userService.getUserByUsername(anyString())).thenReturn(new User());
 
-        //Act
-        String viewName = bidListController.addBidForm(mockBid ,principal, model);
+        //Act & Assert
+        mockMvc.perform(get("/bidList/add").principal(principal)).andExpect(status().isOk());
 
-        //Assert
-        assertThat(viewName).isEqualTo("bidList/add");
         verify(userService, times(1)).getUserByUsername(anyString());
     }
 
