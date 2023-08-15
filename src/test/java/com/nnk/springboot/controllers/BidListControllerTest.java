@@ -10,20 +10,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.security.Principal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class BidListControllerTest {
@@ -36,12 +32,6 @@ class BidListControllerTest {
 
     @Mock
     UserService userService;
-
-    @Mock
-    BindingResult bindingResult;
-
-    @Mock
-    Model model;
 
     @Mock
     Principal principal;
@@ -61,6 +51,7 @@ class BidListControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser")
     void testHome() throws Exception {
         //Arrange
         when(principal.getName()).thenReturn("testUser");
@@ -76,6 +67,7 @@ class BidListControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser")
     void testAddBidForm() throws Exception{
         //Arrange
         when(principal.getName()).thenReturn("testUser");
@@ -83,64 +75,63 @@ class BidListControllerTest {
 
         //Act & Assert
         mockMvc.perform(get("/bidList/add").principal(principal)).andExpect(status().isOk());
-
         verify(userService, times(1)).getUserByUsername(anyString());
     }
 
     @Test
-    void testValidate_NoErrors() {
-        // Arrange
-        BindingResult result = mock(BindingResult.class);
-        when(result.hasErrors()).thenReturn(false);
+    @WithMockUser(username = "testUser")
+    void testValidate_NoErrors() throws Exception {
+    // Act & Assert
+        mockMvc.perform(post("/bidList/validate") // Assuming "/bidList/validate" is the endpoint to validate the bid
+                        .flashAttr("bidList", mockBid))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/bidList/list"));
 
-        // Act
-        String viewName = bidListController.validate(mockBid, result);
-
-        // Assert
-        assertThat(viewName).isEqualTo("redirect:/bidList/list");
         verify(bidListService, times(1)).saveBidList(mockBid);
     }
 
     @Test
-    void testShowUpdateForm() {
+    @WithMockUser(username = "testUser")
+    void testShowUpdateForm() throws Exception {
         // Arrange
         int id = 1;
         when(bidListService.getBidById(id)).thenReturn(mockBid);
 
-        // Act
-        String viewName = bidListController.showUpdateForm(id, model);
+        // Act & Assert
+        mockMvc.perform(get("/bidList/update/" + id))
+                .andExpect(status().isOk())
+                .andExpect(view().name("bidList/update"));
 
-        // Assert
-        assertThat(viewName).isEqualTo("bidList/update");
         verify(bidListService, times(1)).getBidById(id);
     }
 
     @Test
-    void testUpdateBid() {
-        // Arrange
+    @WithMockUser(username = "testUser")
+    void testUpdateBid() throws Exception {
+        //Arrange
         int id = 1;
-        when(bindingResult.hasErrors()).thenReturn(false);
 
-        // Act
-        String viewName = bidListController.updateBid(id, mockBid, bindingResult);
+        //Act & Assert
+        mockMvc.perform(post("/bidList/update/" + id)
+                        .flashAttr("bidList", mockBid))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/bidList/list"));
 
-        // Assert
-        assertThat(viewName).isEqualTo("redirect:/bidList/list");
         verify(bidListService, times(1)).updateBidList(mockBid, id);
     }
 
     @Test
-    void testDeleteBid() {
-        // Arrange
+    @WithMockUser(username = "testUser")
+    void testDeleteBid() throws Exception {
+        //Arrange
         int id = 1;
-
         doNothing().when(bidListService).deleteBidListById(id);
 
-        // Act
-        String viewName = bidListController.deleteBid(id);
+        //Act & Assert
+        mockMvc.perform(get("/bidList/delete/" + id))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/bidList/list"));
 
-        // Assert
-        assertThat(viewName).isEqualTo("redirect:/bidList/list");
         verify(bidListService, times(1)).deleteBidListById(id);
     }
 
