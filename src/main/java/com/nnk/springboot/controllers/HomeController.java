@@ -23,7 +23,7 @@ public class HomeController {
 	@RequestMapping("/")
 	public String home(Model model) {
 		log.info("home method called with  {}", model);
-		return "home";
+		return "/home";
 	}
 
 	/**

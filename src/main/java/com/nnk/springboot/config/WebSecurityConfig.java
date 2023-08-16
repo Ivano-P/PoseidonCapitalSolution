@@ -62,7 +62,7 @@ public class WebSecurityConfig {
                 "/user/update");
 
         MvcRequestMatcher homeMatcher = new MvcRequestMatcher(handlerMappingIntrospector,
-                "/home");
+                "/");
 
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
@@ -79,7 +79,4 @@ public class WebSecurityConfig {
 
         return httpSecurity.build();
     }
-
-
-
 }
