@@ -10,14 +10,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
-import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class CurveControllerTest {
@@ -32,19 +35,19 @@ class CurveControllerTest {
     UserService userService;
 
     @Mock
-    BindingResult bindingResult;
-
-    @Mock
     Model model;
 
     @Mock
     Principal principal;
 
+    private MockMvc mockMvc;
+
     CurvePoint mockCurvePoint;
 
-    private static final String REDIRECT_CURVE_POINT_LIST = "redirect:/curvePoint/list";
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(curveController).build();
+
         mockCurvePoint = new CurvePoint();
         mockCurvePoint.setCurveId(5);
         mockCurvePoint.setTerm(10.00);
@@ -52,82 +55,84 @@ class CurveControllerTest {
     }
 
     @Test
-    void testHome() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testHome() throws Exception {
         // Arrange
-        when(curveService.getAllCurvePoints()).thenReturn(Collections.singletonList(mockCurvePoint));
         when(principal.getName()).thenReturn("mockUsername");
         when(userService.getUserByUsername("mockUsername")).thenReturn(new User());
 
-        // Act
-        String viewName = curveController.home(model, principal);
+        // Act  & Assert
+        mockMvc.perform(get("/curvePoint/list").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("curvePoint/list"));
 
-        // Assert
-        assertThat(viewName).isEqualTo("curvePoint/list");
-        verify(model, times(1)).addAttribute("curvePoints", Collections.singletonList(mockCurvePoint));
-        verify(model, times(1)).addAttribute("currentUser", new User());
+        verify(userService, times(1)).getUserByUsername(anyString());
+        verify(curveService, times(1)).getAllCurvePoints();
     }
 
 
     @Test
-    void testAddBidForm() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testAddBidForm() throws Exception {
         // Act
         String viewName = curveController.addBidForm(mockCurvePoint, model);
 
-        // Assert
-        assertThat(viewName).isEqualTo("curvePoint/add");
+        // Assert & Act
+        mockMvc.perform(get("/curvePoint/add")).andExpect(status().isOk())
+                        .andExpect(view().name("curvePoint/add"));
     }
 
     @Test
-    void testValidate_NoErrors() {
-        // Arrange
-        when(bindingResult.hasErrors()).thenReturn(false);
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testValidate_NoErrors() throws Exception {
+        // Assert & act
+        mockMvc.perform(post("/curvePoint/validate")
+                        .flashAttr("curvePoint", mockCurvePoint))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/curvePoint/list"));
 
-        // Act
-        String viewName = curveController.validate(mockCurvePoint, bindingResult);
-
-        // Assert
-        assertThat(viewName).isEqualTo(REDIRECT_CURVE_POINT_LIST);
         verify(curveService, times(1)).saveCurvePoint(mockCurvePoint);
     }
 
     @Test
-    void testShowUpdateForm() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testShowUpdateForm() throws Exception {
         // Arrange
         int id = 1;
         when(curveService.getCurvePointById(id)).thenReturn(mockCurvePoint);
 
-        // Act
-        String viewName = curveController.showUpdateForm(id, model);
+        // Act & Assert
+        mockMvc.perform(get("/curvePoint/update/" + id))
+                .andExpect(status().isOk())
+                .andExpect(view().name("curvePoint/update"));
 
-        // Assert
-        assertThat(viewName).isEqualTo("curvePoint/update");
         verify(curveService, times(1)).getCurvePointById(id);
     }
 
     @Test
-    void testUpdateBid_NoErrors() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testUpdateBid_NoErrors() throws Exception {
         // Arrange
         int id = 1;
-        when(bindingResult.hasErrors()).thenReturn(false);
 
-        // Act
-        String viewName = curveController.updateBid(id, mockCurvePoint, bindingResult);
+        // Act & Assert
+        mockMvc.perform(post("/curvePoint/update/" + id)
+                        .flashAttr("curvePoint", mockCurvePoint))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/curvePoint/list"));
 
-        // Assert
-        assertThat(viewName).isEqualTo(REDIRECT_CURVE_POINT_LIST);
         verify(curveService, times(1)).updateCurvePoint(mockCurvePoint, id);
     }
 
     @Test
-    void testDeleteBid() {
+    void testDeleteBid() throws Exception {
         // Arrange
         int id = 1;
 
-        // Act
-        String viewName = curveController.deleteBid(id);
-
-        // Assert
-        assertThat(viewName).isEqualTo(REDIRECT_CURVE_POINT_LIST);
+        //Act & Assert
+        mockMvc.perform(get("/curvePoint/delete/" + id))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/curvePoint/list"));
         verify(curveService, times(1)).deleteCurvePointById(id);
     }
 

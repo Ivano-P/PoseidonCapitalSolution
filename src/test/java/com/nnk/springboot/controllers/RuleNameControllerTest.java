@@ -10,14 +10,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
-import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class RuleNameControllerTest {
@@ -32,17 +35,18 @@ class RuleNameControllerTest {
     UserService userService;
 
     @Mock
-    BindingResult bindingResult;
-
-    @Mock
     Model model;
     @Mock
     Principal principal;
 
     RuleName mockRuleName;
 
+    private MockMvc mockMvc;
+
     @BeforeEach
     void setUp(){
+        mockMvc = MockMvcBuilders.standaloneSetup(ruleNameController).build();
+
         mockRuleName = new RuleName();
         mockRuleName.setName("testName");
         mockRuleName.setDescription("testDescription");
@@ -53,82 +57,82 @@ class RuleNameControllerTest {
     }
 
     @Test
-    void testHome() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testHome() throws Exception {
         //Arrange
-        when(ruleNameService.getAllRuleNames()).thenReturn(Collections.singletonList(mockRuleName));
-        when(principal.getName()).thenReturn("username");
+        when(principal.getName()).thenReturn("mockUsername");
         when(userService.getUserByUsername(anyString())).thenReturn(new User());
 
-        //Act
-        String result = ruleNameController.home(model, principal);
+        // Act  & Assert
+        mockMvc.perform(get("/ruleName/list").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("ruleName/list"));
 
-        //Assert
-        verify(model, times(1)).addAttribute("ruleNames", Collections.singletonList(mockRuleName));
-        verify(model, times(1)).addAttribute(eq("currentUser"), any());
-        assertThat(result).isEqualTo("ruleName/list");
+        verify(userService, times(1)).getUserByUsername(anyString());
+        verify(ruleNameService, times(1)).getAllRuleNames();
     }
 
     @Test
-    void testAddRuleForm() {
-        //Arrange
-
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testAddRuleForm() throws Exception {
         //Act
         String result = ruleNameController.addRuleForm(mockRuleName, model);
 
-        //Assert
-        verify(model, times(1)).addAttribute("ruleName", new RuleName());
-        assertThat(result).isEqualTo("ruleName/add");
+        // Assert & Act
+        mockMvc.perform(get("/ruleName/add")).andExpect(status().isOk())
+                .andExpect(view().name("ruleName/add"));
     }
 
     @Test
-    void testValidate() {
-        //Arrange
-        when(bindingResult.hasErrors()).thenReturn(false);
-
-        //Act
-        String result = ruleNameController.validate(mockRuleName, bindingResult);
-
-        //Assert
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testValidate() throws Exception {
+        // Assert & act
+        mockMvc.perform(post("/ruleName/validate")
+                        .flashAttr("ruleName", mockRuleName))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/ruleName/list"));
         verify(ruleNameService, times(1)).saveRuleName(mockRuleName);
-        assertThat(result).isEqualTo("redirect:/ruleName/list");
     }
 
     @Test
-    void testShowUpdateForm() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testShowUpdateForm() throws Exception {
         //Arrange
+        int id = 1;
         when(ruleNameService.getRuleNameById(anyInt())).thenReturn(mockRuleName);
 
-        //Act
-        String result = ruleNameController.showUpdateForm(1, model);
+        // Act & Assert
+        mockMvc.perform(get("/ruleName/update/" + id))
+                .andExpect(status().isOk())
+                .andExpect(view().name("ruleName/update"));
 
-        //Assert
-        verify(model, times(1)).addAttribute("ruleName", mockRuleName);
-        assertThat(result).isEqualTo("ruleName/update");
+        verify(ruleNameService, times(1)).getRuleNameById(id);
     }
 
     @Test
-    void testUpdateRuleName() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testUpdateRuleName() throws Exception {
         //Arrange
-        when(bindingResult.hasErrors()).thenReturn(false);
+        int id = 1;
 
-        //Act
-        String result = ruleNameController.updateRuleName(1, mockRuleName, bindingResult);
-
-        //Assert
+        // Act & Assert
+        mockMvc.perform(post("/ruleName/update/" + id)
+                        .flashAttr("ruleName", mockRuleName))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/ruleName/list"));
         verify(ruleNameService, times(1)).updateRuleName(mockRuleName, 1);
-        assertThat(result).isEqualTo("redirect:/ruleName/list");
     }
 
     @Test
-    void testDeleteRuleName() {
-        //Arrange
+    void testDeleteRuleName() throws Exception {
+        // Arrange
+        int id = 1;
 
-        //Act
-        String result = ruleNameController.deleteRuleName(1);
-
-        //Assert
-        verify(ruleNameService, times(1)).deleteRuleNameById(1);
-        assertThat(result).isEqualTo("redirect:/ruleName/list");
+        //Act & Assert
+        mockMvc.perform(get("/ruleName/delete/" + id))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/ruleName/list"));
+        verify(ruleNameService, times(1)).deleteRuleNameById(id);
     }
 
 }

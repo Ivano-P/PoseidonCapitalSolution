@@ -10,14 +10,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
-import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class RatingControllerTest {
@@ -30,89 +33,104 @@ class RatingControllerTest {
     UserService userService;
 
     @Mock
-    BindingResult bindingResult;
-
-    @Mock
     Model model;
     @Mock
     Principal principal;
 
     Rating mockRating;
 
-    private static final String REDIRECT_RATING_LIST = "redirect:/rating/list";
+    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp(){
+        mockMvc = MockMvcBuilders.standaloneSetup(ratingController).build();
+
         mockRating = new Rating();
-        mockRating.setMoodysRating("moody");
-        mockRating.setSandPRating("sandp");
-        mockRating.setFitchRating("fitch");
-        mockRating.setOrderNumber(3);
+        mockRating.setMoodysRating("AAA");
+        mockRating.setSandPRating("AAA");
+        mockRating.setFitchRating("AAA");
+        mockRating.setOrderNumber(2);
     }
 
     @Test
-    void testHome() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testHome() throws Exception {
         //Arrange
-        when(ratingService.getAllRatings()).thenReturn(Collections.singletonList(mockRating));
-        when(principal.getName()).thenReturn("username");
+        when(principal.getName()).thenReturn("mockUsername");
         when(userService.getUserByUsername(anyString())).thenReturn(new User());
-        //Act
-        String viewName = ratingController.home(model, principal);
-        //Assert
-        verify(model, times(1)).addAttribute("ratings", Collections.singletonList(mockRating));
-        verify(model, times(1)).addAttribute(eq("currentUser"), any(User.class));
-        assertThat(viewName).isEqualTo("rating/list");
+
+        // Act  & Assert
+        mockMvc.perform(get("/rating/list").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("rating/list"));
+
+        verify(userService, times(1)).getUserByUsername(anyString());
+        verify(ratingService, times(1)).getAllRatings();
     }
 
     @Test
-    void testAddRatingForm() {
-        //Act
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testAddRatingForm() throws Exception {
+        //Arrange
         String viewName = ratingController.addRatingForm(mockRating, model);
-        //Assert
-        verify(model, times(1)).addAttribute(eq("rating"), any(Rating.class));
-        assertThat(viewName).isEqualTo("rating/add");
+
+        // Assert & Act
+        mockMvc.perform(get("/rating/add")).andExpect(status().isOk())
+                .andExpect(view().name("rating/add"));
     }
 
     @Test
-    void testValidate() {
-        //Arrange
-        when(bindingResult.hasErrors()).thenReturn(false);
-        //Act
-        String viewName = ratingController.validate(mockRating, bindingResult);
-        //Assert
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testValidate() throws Exception {
+        // Assert & act
+        mockMvc.perform(post("/rating/validate")
+                        .flashAttr("rating", mockRating))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/rating/list"));
+
         verify(ratingService, times(1)).saveRating(mockRating);
-        assertThat(viewName).isEqualTo(REDIRECT_RATING_LIST);
     }
 
     @Test
-    void testShowUpdateForm() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testShowUpdateForm() throws Exception {
         //Arrange
+        int id = 1;
         when(ratingService.getRatingById(anyInt())).thenReturn(mockRating);
-        //Act
-        String viewName = ratingController.showUpdateForm(1, model);
-        //Assert
-        verify(model, times(1)).addAttribute("rating", mockRating);
-        assertThat(viewName).isEqualTo("rating/update");
+
+        // Act & Assert
+        mockMvc.perform(get("/rating/update/" + id))
+                .andExpect(status().isOk())
+                .andExpect(view().name("rating/update"));
+
+        verify(ratingService, times(1)).getRatingById(id);
     }
 
     @Test
-    void testUpdateRating() {
+    @WithMockUser(username = "mockUsername", roles = "USER")
+    void testUpdateRating() throws Exception {
         //Arrange
-        when(bindingResult.hasErrors()).thenReturn(false);
-        //Act
-        String viewName = ratingController.updateRating(1, mockRating, bindingResult);
-        //Assert
+        int id = 1;
+
+        // Act & Assert
+        mockMvc.perform(post("/rating/update/" + id)
+                        .flashAttr("rating", mockRating))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/rating/list"));
+
         verify(ratingService, times(1)).updateRating(mockRating, 1);
-        assertThat(viewName).isEqualTo(REDIRECT_RATING_LIST);
     }
 
     @Test
-    void testDeleteRating() {
-        //Act
-        String viewName = ratingController.deleteRating(1);
-        //Assert
-        verify(ratingService, times(1)).deleteRatingById(1);
-        assertThat(viewName).isEqualTo(REDIRECT_RATING_LIST);
+    void testDeleteRating() throws Exception {
+        // Arrange
+        int id = 1;
+
+        //Act & Assert
+        mockMvc.perform(get("/rating/delete/" + id))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/rating/list"));
+        verify(ratingService, times(1)).deleteRatingById(id);
     }
 
 }

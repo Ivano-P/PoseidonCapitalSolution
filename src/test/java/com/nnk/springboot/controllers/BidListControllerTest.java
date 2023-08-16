@@ -82,7 +82,7 @@ class BidListControllerTest {
     @WithMockUser(username = "testUser")
     void testValidate_NoErrors() throws Exception {
     // Act & Assert
-        mockMvc.perform(post("/bidList/validate") // Assuming "/bidList/validate" is the endpoint to validate the bid
+        mockMvc.perform(post("/bidList/validate")
                         .flashAttr("bidList", mockBid))
                 .andExpect(status().is3xxRedirection())  // Expecting a redirect
                 .andExpect(redirectedUrl("/bidList/list"));

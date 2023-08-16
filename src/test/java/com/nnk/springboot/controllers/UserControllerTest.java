@@ -2,21 +2,23 @@ package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.implementations.UserServiceImpl;
-import com.nnk.springboot.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
-import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
@@ -28,95 +30,101 @@ class UserControllerTest {
     UserServiceImpl userService;
 
     @Mock
-    BindingResult bindingResult;
-
-    @Mock
     Model model;
     @Mock
     Principal principal;
 
     User mockUser;
 
+    private MockMvc mockMvc;
+
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+
         mockUser = new User();
         mockUser.setFullname("testUser");
-        mockUser.setUsername("tester");
-        mockUser.setPassword("testPassword");
-        mockUser.setRole("user");
+        mockUser.setUsername("mockUsername");
+        mockUser.setPassword("testPassword1*");
+        mockUser.setRole("admin");
     }
 
     @Test
-    void testHome() {
+    @WithMockUser(username = "mockUsername", roles = "ADMIN")
+    void testHome() throws Exception {
         //Arrange
-        when(userService.getAllUsers()).thenReturn(Collections.singletonList(mockUser));
-        when(principal.getName()).thenReturn("tester");
+        when(principal.getName()).thenReturn("mockUsername");
         when(userService.getUserByUsername(anyString())).thenReturn(mockUser);
 
-        //Act
-        String result = userController.home(model, principal);
+        // Act  & Assert
+        mockMvc.perform(get("/user/list").principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(view().name("user/list"));
 
-        //Assert
         verify(userService, times(1)).getAllUsers();
         verify(userService, times(1)).getUserByUsername(anyString());
-        assertThat(result).isEqualTo("user/list");
     }
 
     @Test
-    void testAddUserForm() {
-        //Act
+    @WithMockUser(username = "mockUsername", roles = "ADMIN")
+    void testAddUserForm() throws Exception {
+        //Arrange
         String result = userController.addUserForm(mockUser, model);
 
-        //Assert
-        assertThat(result).isEqualTo("user/add");
+        // Assert & Act
+        mockMvc.perform(get("/user/add")).andExpect(status().isOk())
+                .andExpect(view().name("user/add"));
     }
 
     @Test
-    void testValidate() {
-        //Arrange
-        when(bindingResult.hasErrors()).thenReturn(false);
-
-        //Act
-        String result = userController.validate(mockUser, bindingResult, model);
-
-        //Assert
+    @WithMockUser(username = "mockUsername", roles = "ADMIN")
+    void testValidate() throws Exception {
+        // Assert & act
+        mockMvc.perform(post("/user/validate")
+                        .flashAttr("user", mockUser))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/user/list"));
         verify(userService, times(1)).saveUser(mockUser);
-        assertThat(result).isEqualTo("redirect:/user/list");
     }
 
     @Test
-    void testShowUpdateForm() {
+    @WithMockUser(username = "mockUsername", roles = "ADMIN")
+    void testShowUpdateForm() throws Exception {
         //Arrange
+        int id = 1;
         when(userService.getUserById(anyInt())).thenReturn(mockUser);
 
-        //Act
-        String result = userController.showUpdateForm(1, model);
-
-        //Assert
+        // Act & Assert
+        mockMvc.perform(get("/user/update/" + id))
+                .andExpect(status().isOk())
+                .andExpect(view().name("user/update"));
         verify(userService, times(1)).getUserById(anyInt());
-        assertThat(result).isEqualTo("user/update");
     }
 
     @Test
-    void testUpdateUser() {
+    @WithMockUser(username = "mockUsername", roles = "ADMIN")
+    void testUpdateUser() throws Exception {
         //Arrange
-        when(bindingResult.hasErrors()).thenReturn(false);
+        int id = 1;
 
-        //Act
-        String result = userController.updateUser(1, mockUser, bindingResult);
-
-        //Assert
+        // Act & Assert
+        mockMvc.perform(post("/user/update/" + id)
+                        .flashAttr("user", mockUser))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/user/list"));
         verify(userService, times(1)).updateUser(mockUser, 1);
-        assertThat(result).isEqualTo("redirect:/user/list");
     }
 
     @Test
-    void testDeleteUser() {
-        //Act
-        String result = userController.deleteUser(1);
+    @WithMockUser(username = "mockUsername", roles = "ADMIN")
+    void testDeleteUser() throws Exception {
+        //Arrange
+        int id = 1;
 
-        //Assert
+        //Act & Assert
+        mockMvc.perform(get("/user/delete/" + id))
+                .andExpect(status().is3xxRedirection())  // Expecting a redirect
+                .andExpect(redirectedUrl("/user/list"));
         verify(userService, times(1)).deleteUserById(1);
-        assertThat(result).isEqualTo("redirect:/user/list");
     }
 }
